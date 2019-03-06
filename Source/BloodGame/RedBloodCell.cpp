@@ -74,7 +74,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!Collided) {
+	if (!InWater) {
 		switch (CellMovementDirection) {
 		case MovementDirectionEnum::LeftMovement: this->AddActorWorldOffset(FVector(Speed * -1, 0, 0)); break;
 		case MovementDirectionEnum::UpMovement: this->AddActorWorldOffset(FVector(0, 0, Speed)); break;
@@ -82,8 +82,15 @@ void ARedBloodCell::Tick(float DeltaTime)
 		case MovementDirectionEnum::DownMovement: this->AddActorWorldOffset(FVector(0, 0, Speed * -1)); break;
 		case MovementDirectionEnum::NoMovement: break;
 		}
+	}else
+	{
+		if (this->GetActorLocation().Z < 1130) {
+			this->AddActorWorldOffset(FVector(0, 0, 5));
+		}
 	}
-	if (VerticleSway) {
+
+
+	if (VerticleSway && !InWater) {
 		if (VerticleSwayCount < VerticleSwayDestination && VerticleSwayDestination > 0)
 		{
 			this->AddActorWorldOffset(FVector(0, 0, 1));
@@ -99,7 +106,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 			VerticleSwayDestination *= -1;
 		}
 	}
-	if (HorizontalSway) {
+	if (HorizontalSway && !InWater) {
 		if (HorizontalSwayCount < HorizontalSwayDestination && HorizontalSwayDestination > 0)
 		{
 			this->AddActorWorldOffset(FVector(1, 0, 0));
@@ -116,11 +123,14 @@ void ARedBloodCell::Tick(float DeltaTime)
 			HorizontalSwayDestination *= -1;
 		}
 	}
+
+	
 }
 
-// Called to bind functionality to input
-void ARedBloodCell::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ARedBloodCell::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	if (OtherActor->GetName() == "Water_Blueprint")
+	{
+		InWater = true;
+	}
 }

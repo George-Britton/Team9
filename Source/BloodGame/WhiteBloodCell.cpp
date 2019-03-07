@@ -133,11 +133,5 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 			HorizontalSwayDestination *= -1;
 		}
 	}
-}
-
-// Called to bind functionality to input
-void AWhiteBloodCell::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }

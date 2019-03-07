@@ -64,9 +64,9 @@ void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 			FTransform ShieldTransform;
 			switch(ShieldOrientation){
 			case ShieldOrientationEnum::ShieldOrientation_Left: ShieldTransform.SetLocation(FVector(-80, 0, 0)); ShieldTransform.SetRotation((FRotator(0, 0, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Right: ShieldTransform.SetLocation(FVector(80, 0, 0)); ShieldTransform.SetRotation((FRotator(180, 0, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Up: ShieldTransform.SetLocation(FVector(0, 0, 80)); ShieldTransform.SetRotation((FRotator(270, 0, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Down: ShieldTransform.SetLocation(FVector(0, 0, -80)); ShieldTransform.SetRotation((FRotator(90, 0, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Right: ShieldTransform.SetLocation(FVector(80, 0, 0)); ShieldTransform.SetRotation((FRotator(0, 0, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Up: ShieldTransform.SetLocation(FVector(0, 0, 80)); ShieldTransform.SetRotation((FRotator(0, 90, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Down: ShieldTransform.SetLocation(FVector(0, 0, -80)); ShieldTransform.SetRotation((FRotator(0, 90, 0).Quaternion())); break;
 			}
 			ShieldISM->AddInstance(ShieldTransform);
 		}

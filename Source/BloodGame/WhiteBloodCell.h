@@ -25,7 +25,7 @@ public:
 	AWhiteBloodCell();
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
-		bool ApplyChanges = false;
+		bool ApplyChanges = true;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		bool VerticleSway = false;
@@ -55,7 +55,10 @@ public:
 		ShieldOrientationEnum ShieldOrientation = ShieldOrientationEnum::ShieldOrientation_Left;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
-		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::NoMovement;
+		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::LeftMovement;
+
+	UPROPERTY()
+		bool IsMoving = true;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		float Speed = 5.0f;
@@ -64,13 +67,13 @@ public:
 		bool Collided = false;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
-		UStaticMesh * CellBody;
+		UPaperSprite * Sprite;
+
+	UPROPERTY()
+		UPaperSpriteComponent * CellSprite;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		UStaticMesh * Shield;
-
-	UPROPERTY()
-		UInstancedStaticMeshComponent * CellBodyISM;
 
 	UPROPERTY()
 		UInstancedStaticMeshComponent * ShieldISM;
@@ -88,4 +91,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	// Called when the cell hits anything
+	UFUNCTION()
+		void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 };

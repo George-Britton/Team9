@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WhiteBloodCell.h"
+#include "PlayerPawn.h"
 
 
 // Sets default values
@@ -9,13 +10,15 @@ AWhiteBloodCell::AWhiteBloodCell()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	this->CellBodyISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Cell Body"));
 	this->ShieldISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Shield"));
-	CellBodyISM->SetupAttachment(this->RootComponent);
+	this->CellSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Cell Sprite"));
+	CellSprite->SetupAttachment(RootComponent);
 	ShieldISM->SetupAttachment(RootComponent);
 
-	if (this->CellBody) { this->CellBodyISM->SetStaticMesh(this->CellBody); }
 	if (this->Shield) { this->ShieldISM->SetStaticMesh(this->Shield); }
+
+	ShieldISM->SetNotifyRigidBodyCollision(true);
+
 }
 
 // Called every time anything changes
@@ -44,17 +47,21 @@ void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 	}
 
 	if (ApplyChanges) {
-		if (this->CellBody)
-		{
-			CellBodyISM->ClearInstances();
-			this->CellBodyISM->SetStaticMesh(this->CellBody);
-			FTransform CellTransform;
-			CellTransform.SetLocation(FVector(0.0f, 0.0f, 0.0f));
-			CellBodyISM->AddInstance(CellTransform);
-		}
-		else if (!(this->CellBody))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a static mesh"));
+		if (ApplyChanges) {
+			if (this->Sprite)
+			{
+				CellSprite->SetSprite(Sprite);
+				CellSprite->SetWorldScale3D(FVector(0.75, 1, 0.75));
+				CellSprite->SetWorldRotation(FRotator((FMath::RandRange(-179, 180)), 0, 0).Quaternion());
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite"));
+			}
+
+			ApplyChanges = false;
+
+			CellSprite->TranslucencySortPriority = 75;
 		}
 
 		if (this->Shield)
@@ -63,10 +70,10 @@ void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 			this->ShieldISM->SetStaticMesh(this->Shield);
 			FTransform ShieldTransform;
 			switch(ShieldOrientation){
-			case ShieldOrientationEnum::ShieldOrientation_Left: ShieldTransform.SetLocation(FVector(-80, 0, 0)); ShieldTransform.SetRotation((FRotator(0, 0, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Right: ShieldTransform.SetLocation(FVector(80, 0, 0)); ShieldTransform.SetRotation((FRotator(0, 0, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Up: ShieldTransform.SetLocation(FVector(0, 0, 80)); ShieldTransform.SetRotation((FRotator(0, 90, 0).Quaternion())); break;
-			case ShieldOrientationEnum::ShieldOrientation_Down: ShieldTransform.SetLocation(FVector(0, 0, -80)); ShieldTransform.SetRotation((FRotator(0, 90, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Left: ShieldTransform.SetLocation(FVector(-100, 0, 0)); ShieldTransform.SetRotation((FRotator(0, 0, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Right: ShieldTransform.SetLocation(FVector(100, 0, 0)); ShieldTransform.SetRotation((FRotator(180, 0, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Up: ShieldTransform.SetLocation(FVector(0, 0, 100)); ShieldTransform.SetRotation((FRotator(270, 0, 0).Quaternion())); break;
+			case ShieldOrientationEnum::ShieldOrientation_Down: ShieldTransform.SetLocation(FVector(0, 0, -100)); ShieldTransform.SetRotation((FRotator(90, 0, 0).Quaternion())); break;
 			}
 			ShieldISM->AddInstance(ShieldTransform);
 		}
@@ -83,6 +90,14 @@ void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 void AWhiteBloodCell::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (CellMovementDirection == MovementDirectionEnum::NoMovement)
+	{
+		IsMoving = false;
+	}else
+	{
+		IsMoving = true;
+	}
 
 }
 
@@ -134,4 +149,26 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 		}
 	}
 
+}
+
+void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+
+	//if the primitive comp is the shield.. do something. 
+	if ((Other != NULL) && (Other != this) && (OtherComp != NULL))
+	{
+		
+		APlayerPawn * player = Cast<APlayerPawn>(Other);
+		if(player && MyComp == ShieldISM)
+		{
+			//if we're the player!!! this is good....
+			MovementDirectionEnum temp = CellMovementDirection;
+			CellMovementDirection = MovementDirectionEnum::NoMovement;
+			player->HitShield(this);
+			FLatentActionInfo LatentInfo;
+			UKismetSystemLibrary::Delay(this, 0.2f, LatentInfo);
+			CellMovementDirection = temp;
+		}
+		
+	}
 }

@@ -4,6 +4,7 @@
 
 #include "GameFramework/Pawn.h"
 #include "Engine.h"
+#include "PaperSpriteComponent.h"
 #include "RedBloodCell.generated.h"
 
 UENUM()
@@ -61,10 +62,13 @@ public:
 		bool Collided = false;
 
 	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
-		UStaticMesh * CellBody;
+		TArray<UPaperSprite*> CellSprites;
 
 	UPROPERTY()
-		UInstancedStaticMeshComponent * CellBodyISM;
+		UPaperSprite * Sprite;
+
+	UPROPERTY()
+		UPaperSpriteComponent * CellSprite;
 
 	UPROPERTY()
 		bool InWater = false;

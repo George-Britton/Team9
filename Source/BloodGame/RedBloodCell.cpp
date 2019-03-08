@@ -9,10 +9,8 @@ ARedBloodCell::ARedBloodCell()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	this->CellBodyISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Cell Body"));
-	CellBodyISM->SetupAttachment(this->RootComponent);
-
-	if (this->CellBody) { this->CellBodyISM->SetStaticMesh(this->CellBody); }
+	this->CellSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Cell Sprite"));
+	CellSprite->SetupAttachment(RootComponent);
 
 }
 
@@ -42,17 +40,15 @@ void ARedBloodCell::OnConstruction(const FTransform& Transform)
 	}
 
 	if (ApplyChanges) {
-		if (this->CellBody)
+		if (this->CellSprites[0])
 		{
-			CellBodyISM->ClearInstances();
-			this->CellBodyISM->SetStaticMesh(this->CellBody);
-			FTransform CellTransform;
-			CellTransform.SetLocation(FVector(0.0f, 0.0f, 0.0f));
-			CellBodyISM->AddInstance(CellTransform);
-		}
-		else if (!(this->CellBody))
+			Sprite = CellSprites[FMath::RandRange(0, CellSprites.Num() - 1)];
+			CellSprite->SetSprite(Sprite);
+
+			CellSprite->TranslucencySortPriority = 60;
+		}else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a static mesh"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite"));
 		}
 
 		ApplyChanges = false;
@@ -66,7 +62,6 @@ void ARedBloodCell::OnConstruction(const FTransform& Transform)
 void ARedBloodCell::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

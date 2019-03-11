@@ -55,7 +55,7 @@ public:
 		ShieldOrientationEnum ShieldOrientation = ShieldOrientationEnum::ShieldOrientation_Left;
 
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
-		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::LeftMovement;
+		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::NoMovement;
 
 	UPROPERTY()
 		bool IsMoving = true;

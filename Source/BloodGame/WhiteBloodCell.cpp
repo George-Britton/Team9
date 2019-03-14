@@ -164,7 +164,7 @@ void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 			//if we're the player!!! this is good....
 			MovementDirectionEnum temp = CellMovementDirection;
 			CellMovementDirection = MovementDirectionEnum::NoMovement;
-			player->HitShield(this);
+			player->HitShield(this, BounceStrength);
 			FLatentActionInfo LatentInfo;
 			UKismetSystemLibrary::Delay(this, 0.2f, LatentInfo);
 			CellMovementDirection = temp;

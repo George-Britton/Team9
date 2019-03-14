@@ -75,6 +75,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		UStaticMesh * Shield;
 
+	UPROPERTY(Editanywhere, Category = "White Blood Cell")
+		float BounceStrength = 5;
+
 	UPROPERTY()
 		UInstancedStaticMeshComponent * ShieldISM;
 

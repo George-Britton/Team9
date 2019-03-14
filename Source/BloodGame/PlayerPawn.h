@@ -30,8 +30,8 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void HitShield(AWhiteBloodCell* blood_cell);
-	void HitShield_Implementation(AWhiteBloodCell* blood_cell) {}
+	void HitShield(AWhiteBloodCell* blood_cell, float BounceStrength);
+	void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
 
 	
 };

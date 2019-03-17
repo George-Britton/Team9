@@ -16,20 +16,19 @@ public:
 	// Sets default values for this actor's properties
 	ADoorWithNerve();
 
-	UPROPERTY(EditAnywhere, Category = "Uncontrollable Zone")
-		bool Reset = false;
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		bool Apply = false;
 
-	UPROPERTY(EditAnywhere, Category = "Uncontrollable Zone")
+	UPROPERTY(EditAnywhere, Category = "Doors")
 		bool Retriggerable = false;
 
-	UPROPERTY(EditAnywhere, Category = "Uncontrollable Zone")
+	UPROPERTY(EditAnywhere, Category = "Doors")
 		uint32 AmountOfDoors = 1;
 
-
-	UPROPERTY(EditAnywhere, Category = "Uncontrollable Zone")
+	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Door;
 
-	UPROPERTY(EditAnywhere, Category = "Uncontrollable Zone")
+	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Nerve;
 
 	UPROPERTY()
@@ -41,6 +40,11 @@ public:
 	UPROPERTY()
 		UInstancedStaticMeshComponent * NerveISM;
 
+	UPROPERTY()
+		TArray<USceneComponent*> Doors;
+
+	UPROPERTY()
+		USceneComponent* DoorParent;
 
 public:
 	// Called every frame

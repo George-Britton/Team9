@@ -10,12 +10,14 @@ ADoorWithNerve::ADoorWithNerve()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->DoorParent = CreateDefaultSubobject<USceneComponent>(TEXT("Door Parent"));
 	this->LeftDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Left Door"));
 	this->RightDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Right Door"));
 	this->NerveISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Nerve"));
 
-	LeftDoor->SetupAttachment(this->RootComponent);
-	RightDoor->SetupAttachment(this->RootComponent);
+	DoorParent->SetupAttachment(this->RootComponent);
+	LeftDoor->SetupAttachment(this->DoorParent);
+	RightDoor->SetupAttachment(this->DoorParent);
 	NerveISM->SetupAttachment(this->RootComponent);
 }
 
@@ -32,10 +34,23 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		this->NerveISM->SetStaticMesh(Nerve);
 	}
 
-	if (Reset) {
+	if (Apply) {
 		LeftDoor->ClearInstances();
 		RightDoor->ClearInstances();
+		for (int32 Remover = 0; Remover < Doors.Num(); Remover++){ Doors.Pop(); }
 
+		Doors.Init(DoorParent, AmountOfDoors);
+
+		for (uint32 Placer = 0; Placer < AmountOfDoors; Placer++)
+		{
+			FTransform DoorTransform;
+			DoorTransform.SetLocation(FVector((Doors[Placer]->GetComponentLocation().X - (Door->GetBounds().GetBox().GetSize().X / 2)), (Doors[Placer]->GetComponentLocation().Y), (Doors[Placer]->GetComponentLocation().Z)));
+			LeftDoor->AddInstance(DoorTransform);
+			DoorTransform.SetLocation(FVector((Doors[Placer]->GetComponentLocation().X + (Door->GetBounds().GetBox().GetSize().X / 2)), (Doors[Placer]->GetComponentLocation().Y), (Doors[Placer]->GetComponentLocation().Z)));
+			RightDoor->AddInstance(DoorTransform);
+		}
+
+		/*
 		FTransform LeftDoorTransform;
 		LeftDoorTransform.SetLocation(FVector(-(Door->GetBounds().GetBox().GetSize().X / 2), 0, 0));
 		LeftDoor->AddInstance(LeftDoorTransform);
@@ -43,8 +58,9 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		FTransform RightDoorTransform;
 		RightDoorTransform.SetLocation(FVector((Door->GetBounds().GetBox().GetSize().X / 2), 0, 0));
 		RightDoor->AddInstance(RightDoorTransform);
+		*/
 
-		Reset = false;
+		Apply = false;
 	}
 }
 

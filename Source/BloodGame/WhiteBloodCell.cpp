@@ -9,63 +9,51 @@ AWhiteBloodCell::AWhiteBloodCell()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Set the basic objects for the actor's components
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->ShieldISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Shield"));
 	this->CellSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Cell Sprite"));
+
+	// Sets the attachments to the root
 	CellSprite->SetupAttachment(RootComponent);
 	ShieldISM->SetupAttachment(RootComponent);
-
-	if (this->Shield) { this->ShieldISM->SetStaticMesh(this->Shield); }
-
 	ShieldISM->SetNotifyRigidBodyCollision(true);
-
 }
 
 // Called every time anything changes
 void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 {
-
+	// Sets the sway direction
 	if (!VerticleSwaySeverity) { VerticleSwaySeverity = 20; }
 	if (!HorizontalSwaySeverity) { HorizontalSwaySeverity = 20; }
 	uint8 RandomVerticleDirection = FMath::RandRange(0, 1);
 	uint8 RandomHorizontalDirection = FMath::RandRange(0, 1);
-	if (RandomVerticleDirection)
-	{
-		VerticleSwayDestination = VerticleSwaySeverity;
-	}
-	else
-	{
-		VerticleSwayDestination = VerticleSwaySeverity * -1;
-	}
-	if (RandomHorizontalDirection)
-	{
-		HorizontalSwayDestination = HorizontalSwaySeverity;
-	}
-	else
-	{
-		HorizontalSwayDestination = HorizontalSwaySeverity * -1;
-	}
+	if (RandomVerticleDirection){ VerticleSwayDestination = VerticleSwaySeverity; }
+	else{ VerticleSwayDestination = VerticleSwaySeverity * -1; }
+	if (RandomHorizontalDirection){ HorizontalSwayDestination = HorizontalSwaySeverity;	}
+	else { HorizontalSwayDestination = HorizontalSwaySeverity * -1; }
 
+	// Changes to be made when applied
 	if (ApplyChanges) {
-		if (ApplyChanges) {
-			if (this->Sprite)
-			{
-				CellSprite->SetSprite(Sprite);
-				CellSprite->SetWorldScale3D(FVector(0.75, 1, 0.75));
-				CellSprite->SetWorldRotation(FRotator((FMath::RandRange(-179, 180)), 0, 0).Quaternion());
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite"));
-			}
-
-			ApplyChanges = false;
-
-			CellSprite->TranslucencySortPriority = 75;
+		if (this->Sprite)
+		{
+			// Creates the sprite for the cell
+			CellSprite->SetSprite(Sprite);
+			CellSprite->SetWorldScale3D(FVector(0.75, 1, 0.75));
+			CellSprite->SetWorldRotation(FRotator((FMath::RandRange(-179, 180)), 0, 0).Quaternion());
 		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite")); // Warning if the sprite doesn't exist
+		}
+
+		// Sets the order the cell should be rendered
+		CellSprite->TranslucencySortPriority = 75;
 
 		if (this->Shield)
 		{
+			// Respawns the shield in the orientation decided in the editor
 			ShieldISM->ClearInstances();
 			this->ShieldISM->SetStaticMesh(this->Shield);
 			FTransform ShieldTransform;
@@ -81,7 +69,7 @@ void AWhiteBloodCell::OnConstruction(const FTransform& Transform)
 		ApplyChanges = false;
 	}
 
-
+	// Disallows the cells swaying in the same way that they're moving
 	if (CellMovementDirection == MovementDirectionEnum::LeftMovement || CellMovementDirection == MovementDirectionEnum::RightMovement) { HorizontalSway = false; }
 	if (CellMovementDirection == MovementDirectionEnum::UpMovement || CellMovementDirection == MovementDirectionEnum::DownMovement) { VerticleSway = false; }
 }
@@ -91,6 +79,7 @@ void AWhiteBloodCell::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Determines if the cell is moving for the player's bouncing purposes
 	if (CellMovementDirection == MovementDirectionEnum::NoMovement)
 	{
 		IsMoving = false;
@@ -107,6 +96,7 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (!Collided) {
+		// Moves the cell every tick
 		switch (CellMovementDirection) {
 		case MovementDirectionEnum::LeftMovement: this->AddActorWorldOffset(FVector(Speed * -1, 0, 0)); break;
 		case MovementDirectionEnum::UpMovement: this->AddActorWorldOffset(FVector(0, 0, Speed)); break;
@@ -115,6 +105,8 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 		case MovementDirectionEnum::NoMovement: break;
 		}
 	}
+
+	// Sways the cell every tick
 	if (VerticleSway) {
 		if (VerticleSwayCount < VerticleSwayDestination && VerticleSwayDestination > 0)
 		{
@@ -148,20 +140,17 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 			HorizontalSwayDestination *= -1;
 		}
 	}
-
 }
 
 void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-
-	//if the primitive comp is the shield.. do something. 
 	if ((Other != NULL) && (Other != this) && (OtherComp != NULL))
 	{
-		
+		// Creates a reference to the player
 		APlayerPawn * player = Cast<APlayerPawn>(Other);
 		if(player && MyComp == ShieldISM)
 		{
-			//if we're the player!!! this is good....
+			// Tells the player they've been hit by a shield
 			MovementDirectionEnum temp = CellMovementDirection;
 			CellMovementDirection = MovementDirectionEnum::NoMovement;
 			player->HitShield(this, BounceStrength);
@@ -169,6 +158,5 @@ void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 			UKismetSystemLibrary::Delay(this, 0.2f, LatentInfo);
 			CellMovementDirection = temp;
 		}
-		
 	}
 }

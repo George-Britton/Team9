@@ -8,52 +8,46 @@ ARedBloodCell::ARedBloodCell()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	// Set the basic objects for the actor's components
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->CellSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Cell Sprite"));
-	CellSprite->SetupAttachment(RootComponent);
 
+	// Sets the attachments to the root
+	CellSprite->SetupAttachment(RootComponent);
 }
 
 // Called every time anything changes
 void ARedBloodCell::OnConstruction(const FTransform& Transform)
 {
-
-	if (!VerticleSwaySeverity) { VerticleSwaySeverity = 20; }
-	if (!HorizontalSwaySeverity) { HorizontalSwaySeverity = 20; }
+	// Sets the sway direction
+	if (!VerticleSwaySeverity){ VerticleSwaySeverity = 20; }
+	if (!HorizontalSwaySeverity){ HorizontalSwaySeverity = 20; }
 	uint8 RandomVerticleDirection = FMath::RandRange(0, 1);
 	uint8 RandomHorizontalDirection = FMath::RandRange(0, 1);
-	if (RandomVerticleDirection)
-	{
-		VerticleSwayDestination = VerticleSwaySeverity;
-	}
-	else
-	{
-		VerticleSwayDestination = VerticleSwaySeverity * -1;
-	}
-	if (RandomHorizontalDirection)
-	{
-		HorizontalSwayDestination = HorizontalSwaySeverity;
-	}
-	else
-	{
-		HorizontalSwayDestination = HorizontalSwaySeverity * -1;
-	}
+	if (RandomVerticleDirection){ VerticleSwayDestination = VerticleSwaySeverity; }
+	else{ VerticleSwayDestination = VerticleSwaySeverity * -1; }
+	if (RandomHorizontalDirection){ HorizontalSwayDestination = HorizontalSwaySeverity; }
+	else{ HorizontalSwayDestination = HorizontalSwaySeverity * -1; }
 
+	// Changes to be made when applied
 	if (ApplyChanges) {
 		if (this->CellSprites[0])
 		{
+			// Creates the sprite for the cell
 			Sprite = CellSprites[FMath::RandRange(0, CellSprites.Num() - 1)];
 			CellSprite->SetSprite(Sprite);
 
+			// Sets the order the cell should be rendered
 			CellSprite->TranslucencySortPriority = 60;
 		}else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please allocate a sprite")); // Warning if the sprite doesn't exist
 		}
 
 		ApplyChanges = false;
 	}
 
+	// Disallows the cells swaying in the same way that they're moving
 	if (CellMovementDirection == MovementDirectionEnum::LeftMovement || CellMovementDirection == MovementDirectionEnum::RightMovement) { HorizontalSway = false; }
 	if (CellMovementDirection == MovementDirectionEnum::UpMovement || CellMovementDirection == MovementDirectionEnum::DownMovement) { VerticleSway = false; }
 }
@@ -69,6 +63,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Moves the cell with the water
 	if (!InWater) {
 		switch (CellMovementDirection) {
 		case MovementDirectionEnum::LeftMovement: this->AddActorWorldOffset(FVector(Speed * -1, 0, 0)); break;
@@ -84,7 +79,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 		}
 	}
 
-
+	// Sways the cell every tick
 	if (VerticleSway && !InWater) {
 		if (VerticleSwayCount < VerticleSwayDestination && VerticleSwayDestination > 0)
 		{
@@ -124,6 +119,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 
 void ARedBloodCell::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	// Sets the cell to be in water when they overlap with it
 	if (OtherActor->GetName() == "Water_Blueprint")
 	{
 		InWater = true;

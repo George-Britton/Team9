@@ -7,7 +7,7 @@
 #include "RedBloodCell.h"
 #include "WhiteBloodCell.generated.h"
 
-UENUM()
+UENUM() // Enum for the placement of the shield relative to the cell
 enum class ShieldOrientationEnum : uint8{
 	ShieldOrientation_Up UMETA(DisplayName = "Up"),
 	ShieldOrientation_Down UMETA(DisplayName = "Down"),
@@ -24,60 +24,71 @@ public:
 	// Sets default values for this pawn's properties
 	AWhiteBloodCell();
 
+	// Applies all the modified changed
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		bool ApplyChanges = true;
 
+	// Whether or not the cell difts
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		bool VerticleSway = false;
-
-	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
-		int32 VerticleSwaySeverity = 20;
-
-	UPROPERTY()
-		int32 VerticleSwayDestination = VerticleSwaySeverity;
-
-	UPROPERTY()
-		int32 VerticleSwayCount = 0;
-
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		bool HorizontalSway = false;
 
+	// How far the cell drifts
+	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
+		int32 VerticleSwaySeverity = 20;
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		int32 HorizontalSwaySeverity = 20;
 
+	// Destination the cell's swaying will end at
+	UPROPERTY()
+		int32 VerticleSwayDestination = VerticleSwaySeverity;
 	UPROPERTY()
 		int32 HorizontalSwayDestination = HorizontalSwaySeverity;
 
+	// How far the cell has swayed so far
+	UPROPERTY()
+		int32 VerticleSwayCount = 0;
 	UPROPERTY()
 		int32 HorizontalSwayCount = 0;
 
+	// Chosen location of the shield relative to the cell
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		ShieldOrientationEnum ShieldOrientation = ShieldOrientationEnum::ShieldOrientation_Left;
 
+	// Direction the cell's moving in
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::NoMovement;
 
+	// Whether or not the cell is moving
 	UPROPERTY()
 		bool IsMoving = true;
 
+	// Speed at which the cell moves
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		float Speed = 5.0f;
 
+	// Whether or not the cell has collided with something
 	UPROPERTY()
 		bool Collided = false;
 
+	// Sprite body for the cell
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		UPaperSprite * Sprite;
 
+	// Sprite that is spawned to represent the cell
 	UPROPERTY()
 		UPaperSpriteComponent * CellSprite;
 
+	// Static mesh for the shield
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell")
 		UStaticMesh * Shield;
 
+	// Strength with which the cell hits the player
 	UPROPERTY(Editanywhere, Category = "White Blood Cell")
 		float BounceStrength = 100;
 
+	// Shield ISM component
 	UPROPERTY()
 		UInstancedStaticMeshComponent * ShieldISM;
 

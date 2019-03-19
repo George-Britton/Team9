@@ -10,26 +10,22 @@ ADoorWithNerve::ADoorWithNerve()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	this->DoorParent = CreateDefaultSubobject<USceneComponent>(TEXT("Door Parent"));
 	this->LeftDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Left Door"));
 	this->RightDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Right Door"));
 	this->NerveISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Nerve"));
 
-	DoorParent->SetupAttachment(this->RootComponent);
-	LeftDoor->SetupAttachment(this->DoorParent);
-	RightDoor->SetupAttachment(this->DoorParent);
+	LeftDoor->SetupAttachment(this->RootComponent);
+	RightDoor->SetupAttachment(this->RootComponent);
 	NerveISM->SetupAttachment(this->RootComponent);
 }
 
 void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 {
-	if (!AmountOfDoors){ AmountOfDoors = 1; }
-
+	if (AmountOfDoors < 1){ AmountOfDoors = 1; }
 	if (this->Door) {
 		this->LeftDoor->SetStaticMesh(Door);
 		this->RightDoor->SetStaticMesh(Door);
 	}
-
 	if (this->Nerve) {
 		this->NerveISM->SetStaticMesh(Nerve);
 	}
@@ -37,10 +33,36 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 	if (Apply) {
 		LeftDoor->ClearInstances();
 		RightDoor->ClearInstances();
-		for (int32 Remover = 0; Remover < Doors.Num(); Remover++){ Doors.Pop(); }
+		NerveISM->ClearInstances();
+		FTransform BaseTransform;
 
-		Doors.Init(DoorParent, AmountOfDoors);
+		if (AmountOfDoors < DoorTransforms.Num()){ for (int32 Popper = 0; Popper < (DoorTransforms.Num() - AmountOfDoors); Popper++) { DoorTransforms.Pop(); } }
+		else if (AmountOfDoors > DoorTransforms.Num())
+		{
+			for (int32 Adder = 0; Adder < (AmountOfDoors - DoorTransforms.Num()); Adder++)
+			{
+				DoorTransforms.Add(BaseTransform);
+			}
+		}
 
+		if (Door && Nerve)
+		{
+			for (int32 Placer = 0; Placer < AmountOfDoors; Placer++)
+			{
+				FTransform DoorPlacement = DoorTransforms[Placer];
+				DoorPlacement.SetLocation(FVector((DoorTransforms[Placer].GetLocation().X - (Door->GetBounds().GetBox().GetSize().X / 2)), DoorTransforms[Placer].GetLocation().Y, DoorTransforms[Placer].GetLocation().Z));
+				LeftDoor->AddInstance(DoorPlacement);
+				DoorPlacement.SetLocation(FVector((DoorTransforms[Placer].GetLocation().X + (Door->GetBounds().GetBox().GetSize().X / 2)), DoorTransforms[Placer].GetLocation().Y, DoorTransforms[Placer].GetLocation().Z));
+				RightDoor->AddInstance(DoorPlacement);
+			}
+
+			NerveISM->AddInstance(NerveLocation);
+		}else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'"));
+		}
+
+		/*
 		for (uint32 Placer = 0; Placer < AmountOfDoors; Placer++)
 		{
 			FTransform DoorTransform;
@@ -50,7 +72,7 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			RightDoor->AddInstance(DoorTransform);
 		}
 
-		/*
+		
 		FTransform LeftDoorTransform;
 		LeftDoorTransform.SetLocation(FVector(-(Door->GetBounds().GetBox().GetSize().X / 2), 0, 0));
 		LeftDoor->AddInstance(LeftDoorTransform);

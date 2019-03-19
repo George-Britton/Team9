@@ -23,13 +23,19 @@ public:
 		bool Retriggerable = false;
 
 	UPROPERTY(EditAnywhere, Category = "Doors")
-		uint32 AmountOfDoors = 1;
+		int32 AmountOfDoors = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Door;
 
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Nerve;
+
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		FTransform NerveLocation;
+
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		TArray<FTransform> DoorTransforms;
 
 	UPROPERTY()
 		UInstancedStaticMeshComponent * LeftDoor;
@@ -39,12 +45,6 @@ public:
 
 	UPROPERTY()
 		UInstancedStaticMeshComponent * NerveISM;
-
-	UPROPERTY()
-		TArray<USceneComponent*> Doors;
-
-	UPROPERTY()
-		USceneComponent* DoorParent;
 
 public:
 	// Called every frame

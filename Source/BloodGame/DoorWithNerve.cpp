@@ -39,7 +39,7 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		if (AmountOfDoors < DoorTransforms.Num()){ for (int32 Popper = 0; Popper < (DoorTransforms.Num() - AmountOfDoors); Popper++) { DoorTransforms.Pop(); } }
 		else if (AmountOfDoors > DoorTransforms.Num())
 		{
-			for (int32 Adder = 0; Adder < (AmountOfDoors - DoorTransforms.Num()); Adder++)
+			for (int32 Adder = DoorTransforms.Num(); Adder < AmountOfDoors; Adder++)
 			{
 				DoorTransforms.Add(BaseTransform);
 			}
@@ -62,26 +62,6 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'"));
 		}
 
-		/*
-		for (uint32 Placer = 0; Placer < AmountOfDoors; Placer++)
-		{
-			FTransform DoorTransform;
-			DoorTransform.SetLocation(FVector((Doors[Placer]->GetComponentLocation().X - (Door->GetBounds().GetBox().GetSize().X / 2)), (Doors[Placer]->GetComponentLocation().Y), (Doors[Placer]->GetComponentLocation().Z)));
-			LeftDoor->AddInstance(DoorTransform);
-			DoorTransform.SetLocation(FVector((Doors[Placer]->GetComponentLocation().X + (Door->GetBounds().GetBox().GetSize().X / 2)), (Doors[Placer]->GetComponentLocation().Y), (Doors[Placer]->GetComponentLocation().Z)));
-			RightDoor->AddInstance(DoorTransform);
-		}
-
-		
-		FTransform LeftDoorTransform;
-		LeftDoorTransform.SetLocation(FVector(-(Door->GetBounds().GetBox().GetSize().X / 2), 0, 0));
-		LeftDoor->AddInstance(LeftDoorTransform);
-
-		FTransform RightDoorTransform;
-		RightDoorTransform.SetLocation(FVector((Door->GetBounds().GetBox().GetSize().X / 2), 0, 0));
-		RightDoor->AddInstance(RightDoorTransform);
-		*/
-
 		Apply = false;
 	}
 }
@@ -91,5 +71,72 @@ void ADoorWithNerve::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (DoorState == DoorStateEnum::DoorState_Closing)
+	{
+		for (int32 DoorIncrementer = 0; DoorIncrementer < AmountOfDoors; DoorIncrementer++)
+		{
+			FTransform DoorNewTransform;
+
+			LeftDoor->GetInstanceTransform(DoorIncrementer, DoorNewTransform);
+			DoorNewTransform.SetLocation(FVector(DoorNewTransform.GetLocation().X + 5, DoorNewTransform.GetLocation().Y, DoorNewTransform.GetLocation().Z));
+			LeftDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
+
+			RightDoor->GetInstanceTransform(DoorIncrementer, DoorNewTransform);
+			DoorNewTransform.SetLocation(FVector(DoorNewTransform.GetLocation().X - 5, DoorNewTransform.GetLocation().Y, DoorNewTransform.GetLocation().Z));
+			RightDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
+		}
+
+		DoorCounter--;
+
+		if (!DoorCounter)
+		{
+			DoorState = DoorStateEnum::DoorState_Closed;
+			NerveISM->AddInstance(NerveLocation);
+			DoorOpenDelay = 0;
+		}
+	}
+	
+	if (DoorState == DoorStateEnum::DoorState_Open && Retriggerable)
+	{
+		DoorOpenDelay += DeltaTime;
+		if (DoorOpenDelay >= DoorsOpenTime) {
+			DoorState = DoorStateEnum::DoorState_Closing;
+		}
+	}
+
+	if (DoorState == DoorStateEnum::DoorState_Opening)
+	{
+		for (int32 DoorIncrementer = 0; DoorIncrementer < AmountOfDoors; DoorIncrementer++)
+		{
+			FTransform DoorNewTransform;
+
+			LeftDoor->GetInstanceTransform(DoorIncrementer, DoorNewTransform);
+			DoorNewTransform.SetLocation(FVector(DoorNewTransform.GetLocation().X - 5, DoorNewTransform.GetLocation().Y, DoorNewTransform.GetLocation().Z));
+			LeftDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
+
+			RightDoor->GetInstanceTransform(DoorIncrementer, DoorNewTransform);
+			DoorNewTransform.SetLocation(FVector(DoorNewTransform.GetLocation().X + 5, DoorNewTransform.GetLocation().Y, DoorNewTransform.GetLocation().Z));
+			RightDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
+		}
+
+		DoorCounter++;
+
+		if (DoorCounter == 25)
+		{
+			DoorState = DoorStateEnum::DoorState_Open;
+		}
+	}
 }
 
+// Called whenever the actor hits anything
+void ADoorWithNerve::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if ((Other != NULL) && (Other != this) && (OtherComp != NULL))
+	{
+		if (Other->GetName()=="Player" && MyComp == NerveISM && DoorState == DoorStateEnum::DoorState_Closed)
+		{
+			DoorState = DoorStateEnum::DoorState_Opening;
+			NerveISM->ClearInstances();
+		}
+	}
+}

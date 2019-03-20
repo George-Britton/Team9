@@ -20,12 +20,12 @@ ARedBloodCell::ARedBloodCell()
 void ARedBloodCell::OnConstruction(const FTransform& Transform)
 {
 	// Sets the sway direction
-	if (!VerticleSwaySeverity){ VerticleSwaySeverity = 20; }
+	if (!VerticalSwaySeverity){ VerticalSwaySeverity = 20; }
 	if (!HorizontalSwaySeverity){ HorizontalSwaySeverity = 20; }
-	uint8 RandomVerticleDirection = FMath::RandRange(0, 1);
+	uint8 RandomVerticalDirection = FMath::RandRange(0, 1);
 	uint8 RandomHorizontalDirection = FMath::RandRange(0, 1);
-	if (RandomVerticleDirection){ VerticleSwayDestination = VerticleSwaySeverity; }
-	else{ VerticleSwayDestination = VerticleSwaySeverity * -1; }
+	if (RandomVerticalDirection){ VerticalSwayDestination = VerticalSwaySeverity; }
+	else{ VerticalSwayDestination = VerticalSwaySeverity * -1; }
 	if (RandomHorizontalDirection){ HorizontalSwayDestination = HorizontalSwaySeverity; }
 	else{ HorizontalSwayDestination = HorizontalSwaySeverity * -1; }
 
@@ -49,7 +49,7 @@ void ARedBloodCell::OnConstruction(const FTransform& Transform)
 
 	// Disallows the cells swaying in the same way that they're moving
 	if (CellMovementDirection == MovementDirectionEnum::LeftMovement || CellMovementDirection == MovementDirectionEnum::RightMovement) { HorizontalSway = false; }
-	if (CellMovementDirection == MovementDirectionEnum::UpMovement || CellMovementDirection == MovementDirectionEnum::DownMovement) { VerticleSway = false; }
+	if (CellMovementDirection == MovementDirectionEnum::UpMovement || CellMovementDirection == MovementDirectionEnum::DownMovement) { VerticalSway = false; }
 }
 
 // Called when the game starts or when spawned
@@ -80,20 +80,20 @@ void ARedBloodCell::Tick(float DeltaTime)
 	}
 
 	// Sways the cell every tick
-	if (VerticleSway && !InWater) {
-		if (VerticleSwayCount < VerticleSwayDestination && VerticleSwayDestination > 0)
+	if (VerticalSway && !InWater) {
+		if (VerticalSwayCount < VerticalSwayDestination && VerticalSwayDestination > 0)
 		{
 			this->AddActorWorldOffset(FVector(0, 0, 1));
-			VerticleSwayCount++;
+			VerticalSwayCount++;
 		}
-		else if (VerticleSwayCount > VerticleSwayDestination && VerticleSwayDestination < 0)
+		else if (VerticalSwayCount > VerticalSwayDestination && VerticalSwayDestination < 0)
 		{
 			this->AddActorWorldOffset(FVector(0, 0, -1));
-			VerticleSwayCount--;
+			VerticalSwayCount--;
 		}
-		else if (VerticleSwayCount == VerticleSwayDestination)
+		else if (VerticalSwayCount == VerticalSwayDestination)
 		{
-			VerticleSwayDestination *= -1;
+			VerticalSwayDestination *= -1;
 		}
 	}
 	if (HorizontalSway && !InWater) {

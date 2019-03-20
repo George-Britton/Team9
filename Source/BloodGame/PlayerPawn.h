@@ -7,6 +7,7 @@
 #include "WhiteBloodCell.h"
 #include "PlayerPawn.generated.h"
 
+class AUncontrollableZone;
 class AWhiteBloodCell;
 UCLASS()
 class BLOODGAME_API APlayerPawn : public APawn
@@ -30,8 +31,14 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void HitShield(AWhiteBloodCell* blood_cell, float BounceStrength);
-	void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
+		void HitShield(AWhiteBloodCell* blood_cell, float BounceStrength);
+		void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
 
-	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void LoseControl(AUncontrollableZone* UncontrollableZone);
+		void LoseControl_Implementation(AUncontrollableZone* UncontrollableZone){}
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void RegainControl(AUncontrollableZone* UncontrollableZone);
+		void RegainControl_Implementation(AUncontrollableZone* UncontrollableZone) {}
 };

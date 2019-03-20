@@ -30,31 +30,31 @@ public:
 		bool ApplyChanges = false;
 
 	// Whether or not the cell difts
-	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
-		bool VerticleSway = true;
-	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
+	UPROPERTY(EditAnywhere, Category = "Red Blood Cell", BlueprintReadWrite)
+		bool VerticalSway = true;
+	UPROPERTY(EditAnywhere, Category = "Red Blood Cell", BlueprintReadWrite)
 		bool HorizontalSway = true;
 
 	// How far the cell drifts
 	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
-		int32 VerticleSwaySeverity = 20;
+		int32 VerticalSwaySeverity = 20;
 	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
 		int32 HorizontalSwaySeverity = 20;
 
 	// Destination the cell's swaying will end at
 	UPROPERTY()
-		int32 VerticleSwayDestination = VerticleSwaySeverity;
+		int32 VerticalSwayDestination = VerticalSwaySeverity;
 	UPROPERTY()
 		int32 HorizontalSwayDestination = HorizontalSwaySeverity;
 
 	// How far the cell has swayed so far
 	UPROPERTY()
-		int32 VerticleSwayCount = 0;
+		int32 VerticalSwayCount = 0;
 	UPROPERTY()
 		int32 HorizontalSwayCount = 0;
 
 	// Direction the cell's moving in
-	UPROPERTY(EditAnywhere, Category = "Red Blood Cell")
+	UPROPERTY(EditAnywhere, Category = "Red Blood Cell", BlueprintReadWrite)
 		MovementDirectionEnum CellMovementDirection = MovementDirectionEnum::NoMovement;
 
 	// Speed at which the cell moves

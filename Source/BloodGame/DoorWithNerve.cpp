@@ -67,6 +67,7 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			}
 
 			NerveISM->AddInstance(NerveLocation);
+			NerveHeight = NerveLocation.GetScale3D().Z;
 		}else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'")); // Warning if the meshes don't exist
@@ -97,14 +98,26 @@ void ADoorWithNerve::Tick(float DeltaTime)
 			RightDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
 		}
 
+		// Regrows the nerve slightly every tick
+		FTransform NerveNewTransform;
+		NerveISM->GetInstanceTransform(0, NerveNewTransform);
+		NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z + (NerveHeight / DoorWidth)));
+		NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z + (NerveHeight / DoorWidth)));
+		NerveISM->UpdateInstanceTransform(0, NerveNewTransform, false, true);
+
 		DoorCounter--;
 
 		// Changes the door's state to closed and puts the nerve back in the scene
 		if (!DoorCounter)
 		{
 			DoorState = DoorStateEnum::DoorState_Closed;
-			NerveISM->AddInstance(NerveLocation);
+			//NerveISM->AddInstance(NerveLocation);
 			DoorOpenDelay = 0;
+
+			// Stops the player moving through the doors
+			LeftDoor->SetCollisionProfileName("BlockAllDynamic");
+			RightDoor->SetCollisionProfileName("BlockAllDynamic");
+			NerveISM->SetCollisionProfileName("BlockAllDynamic");
 		}
 	}
 	
@@ -133,10 +146,17 @@ void ADoorWithNerve::Tick(float DeltaTime)
 			RightDoor->UpdateInstanceTransform(DoorIncrementer, DoorNewTransform, false, true);
 		}
 
+		// Shrinks the nerve slightly every tick
+		FTransform NerveNewTransform;
+		NerveISM->GetInstanceTransform(0, NerveNewTransform);
+		NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z - (NerveHeight / DoorWidth)));
+		NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z - (NerveHeight / DoorWidth)));
+		NerveISM->UpdateInstanceTransform(0, NerveNewTransform, false, true);
+
 		DoorCounter++;
 
 		// Changes the door's state to open
-		if (DoorCounter == 25)
+		if (DoorCounter == DoorWidth)
 		{
 			DoorState = DoorStateEnum::DoorState_Open;
 		}
@@ -152,7 +172,9 @@ void ADoorWithNerve::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrim
 		if (Other->GetName()=="Player" && MyComp == NerveISM && DoorState == DoorStateEnum::DoorState_Closed)
 		{
 			DoorState = DoorStateEnum::DoorState_Opening;
-			NerveISM->ClearInstances();
+			LeftDoor->SetCollisionProfileName("NoCollision");
+			RightDoor->SetCollisionProfileName("NoCollision");
+			NerveISM->SetCollisionProfileName("NoCollision");
 		}
 	}
 }

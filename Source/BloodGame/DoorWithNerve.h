@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		uint32 DoorsOpenTime = 2;
 
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		uint32 DoorWidth = 25;
+
 	// Static mesh for the door ISMs
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Door;
@@ -79,6 +82,9 @@ public:
 	// Enum of the movement state of the doors
 	UPROPERTY()
 		DoorStateEnum DoorState = DoorStateEnum::DoorState_Closed;
+
+	UPROPERTY()
+		float NerveHeight;
 
 public:
 	// Called every frame

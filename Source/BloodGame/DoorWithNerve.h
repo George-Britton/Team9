@@ -83,6 +83,7 @@ public:
 	UPROPERTY()
 		DoorStateEnum DoorState = DoorStateEnum::DoorState_Closed;
 
+	// Value used to determine how much to grow and shrink the nerve
 	UPROPERTY()
 		float NerveHeight;
 

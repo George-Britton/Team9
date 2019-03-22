@@ -23,6 +23,7 @@ void AUncontrollableZone::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	if (OtherActor->GetName() == "Player")
 	{
+		//Tells the player they've entered an unctontrollable zone
 		APlayerPawn * PlayerRef = Cast<APlayerPawn>(OtherActor);
 		PlayerRef->LoseControl(this);
 	}
@@ -33,6 +34,7 @@ void AUncontrollableZone::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	if (OtherActor->GetName() == "Player")
 	{
+		//Tells the player they've exited an unctontrollable zone
 		APlayerPawn * PlayerRef = Cast<APlayerPawn>(OtherActor);
 		PlayerRef->RegainControl(this);
 	}

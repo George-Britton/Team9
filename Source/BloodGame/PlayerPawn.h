@@ -29,15 +29,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
+	// Function called when the player hits the white blood cells' shields
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void HitShield(AWhiteBloodCell* blood_cell, float BounceStrength);
 		void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
 
+	// Function called when the player enters the uncontrollable zones
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void LoseControl(AUncontrollableZone* UncontrollableZone);
 		void LoseControl_Implementation(AUncontrollableZone* UncontrollableZone){}
 
+	//Funtion called when the player exits the uncontrollable zones
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void RegainControl(AUncontrollableZone* UncontrollableZone);
 		void RegainControl_Implementation(AUncontrollableZone* UncontrollableZone) {}

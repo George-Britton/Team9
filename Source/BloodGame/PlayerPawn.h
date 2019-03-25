@@ -39,8 +39,13 @@ public:
 		void LoseControl(AUncontrollableZone* UncontrollableZone);
 		void LoseControl_Implementation(AUncontrollableZone* UncontrollableZone){}
 
-	//Funtion called when the player exits the uncontrollable zones
+	// Funtion called when the player exits the uncontrollable zones
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void RegainControl(AUncontrollableZone* UncontrollableZone);
 		void RegainControl_Implementation(AUncontrollableZone* UncontrollableZone) {}
+
+	// Function called when the player enters a checkpoint
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void EnterCheckpoint(ACheckpoint* Checkpoint);
+		void EnterCheckpoint_Implementation(ACheckpoint* Checkpoint) {}
 };

@@ -77,10 +77,6 @@ public:
 	UPROPERTY()
 		UPaperSpriteComponent * CellSprite;
 
-	// Whether or not the cell is in water
-	UPROPERTY()
-		bool InWater = false;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -92,9 +88,4 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-
-
-	void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	
 };

@@ -63,24 +63,18 @@ void ARedBloodCell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Moves the cell with the water
-	if (!InWater) {
-		switch (CellMovementDirection) {
-		case MovementDirectionEnum::LeftMovement: this->AddActorWorldOffset(FVector(Speed * -1, 0, 0)); break;
-		case MovementDirectionEnum::UpMovement: this->AddActorWorldOffset(FVector(0, 0, Speed)); break;
-		case MovementDirectionEnum::RightMovement: this->AddActorWorldOffset(FVector(Speed, 0, 0)); break;
-		case MovementDirectionEnum::DownMovement: this->AddActorWorldOffset(FVector(0, 0, Speed * -1)); break;
-		case MovementDirectionEnum::NoMovement: break;
-		}
-	}else
-	{
-		if (this->GetActorLocation().Z < 1130) {
-			this->AddActorWorldOffset(FVector(0, 0, 5));
-		}
+	// Moves the cell
+	switch (CellMovementDirection) {
+	case MovementDirectionEnum::LeftMovement: this->AddActorWorldOffset(FVector(Speed * -1, 0, 0)); break;
+	case MovementDirectionEnum::UpMovement: this->AddActorWorldOffset(FVector(0, 0, Speed)); break;
+	case MovementDirectionEnum::RightMovement: this->AddActorWorldOffset(FVector(Speed, 0, 0)); break;
+	case MovementDirectionEnum::DownMovement: this->AddActorWorldOffset(FVector(0, 0, Speed * -1)); break;
+	case MovementDirectionEnum::NoMovement: break;
 	}
 
+
 	// Sways the cell every tick
-	if (VerticalSway && !InWater) {
+	if (VerticalSway) {
 		if (VerticalSwayCount < VerticalSwayDestination && VerticalSwayDestination > 0)
 		{
 			this->AddActorWorldOffset(FVector(0, 0, 1));
@@ -96,7 +90,7 @@ void ARedBloodCell::Tick(float DeltaTime)
 			VerticalSwayDestination *= -1;
 		}
 	}
-	if (HorizontalSway && !InWater) {
+	if (HorizontalSway) {
 		if (HorizontalSwayCount < HorizontalSwayDestination && HorizontalSwayDestination > 0)
 		{
 			this->AddActorWorldOffset(FVector(1, 0, 0));
@@ -112,16 +106,5 @@ void ARedBloodCell::Tick(float DeltaTime)
 		{
 			HorizontalSwayDestination *= -1;
 		}
-	}
-
-	
-}
-
-void ARedBloodCell::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	// Sets the cell to be in water when they overlap with it
-	if (OtherActor->GetName() == "Water_Blueprint")
-	{
-		InWater = true;
 	}
 }

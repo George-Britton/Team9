@@ -9,6 +9,8 @@
 
 class AUncontrollableZone;
 class AWhiteBloodCell;
+class ACheckpoint;
+
 UCLASS()
 class BLOODGAME_API APlayerPawn : public APawn
 {

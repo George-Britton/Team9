@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Engine.h"
+#include "PaperSprite.h"
 #include "BackgroundCellSpawner.generated.h"
 
 UCLASS()
@@ -27,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 		UBoxComponent * LifeBox;
 
+	UPROPERTY(EditAnywhere, Category = "Spawner")
+		TArray<UPaperSprite*> SpawnedCellSpriteArray;
+
 	UPROPERTY()
 		FTimerHandle SpawningTimer;
 
@@ -35,11 +39,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(Category = "Spawner")
-	void Spawn();
+		void Spawn();
 
-	
 };

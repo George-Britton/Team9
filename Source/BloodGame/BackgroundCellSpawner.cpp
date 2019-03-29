@@ -2,6 +2,8 @@
 
 #include "BackgroundCellSpawner.h"
 #include "TimerManager.h"
+#include "BackgroundCell.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -24,10 +26,12 @@ void ABackgroundCellSpawner::BeginPlay()
 
 	if (!Cell)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign an actor to 'Cell'"));
-	}else
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::White, TEXT("Please assign an actor to 'Cell'"));
+	}else if (!SpawnedCellSpriteArray.Num())
 	{
-
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::White, TEXT("Please add at least one sprite to 'Cell Sprite Array'"));
+	}else if(Cell && SpawnedCellSpriteArray.Num())
+	{
 		FTimerDelegate del;
 		del.BindUObject(this, &ABackgroundCellSpawner::Spawn);
 
@@ -35,18 +39,18 @@ void ABackgroundCellSpawner::BeginPlay()
 	}
 }
 
-// Called every frame
-void ABackgroundCellSpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 // Spawns a cell
 void ABackgroundCellSpawner::Spawn()
 {
-	FVector SpawnLoc = FVector(((FMath::RandRange(0, SpawnBox->GetScaledBoxExtent().X)), (0), ((FMath::RandRange(0, SpawnBox->GetScaledBoxExtent().X)))));
 
+	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::White, TEXT("Spawn"));
 
-	UWorld::SpawnActor(Cell, SpawnLoc)
+	const FVector SpawnLoc = UKismetMathLibrary::RandomPointInBoundingBox(SpawnBox->GetComponentLocation(), SpawnBox->GetScaledBoxExtent());
+	const FRotator SpawnRot(FQuat::Identity);
+	FActorSpawnParameters SpawnParams;
+
+	ABackgroundCell* CellRef = GetWorld()->SpawnActor<ABackgroundCell>(Cell, SpawnLoc, SpawnRot, SpawnParams);
+	
+	CellRef->CellSpriteArray.Append(SpawnedCellSpriteArray);
+	CellRef->ApplyChanges = true;
 }

@@ -34,7 +34,7 @@ public:
 	// Function called when the player hits the white blood cells' shields
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void HitShield(AWhiteBloodCell* blood_cell, float BounceStrength);
-		void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
+	void HitShield_Implementation(AWhiteBloodCell* blood_cell, float BounceStrength) {}
 
 	// Function called when the player enters the uncontrollable zones
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)

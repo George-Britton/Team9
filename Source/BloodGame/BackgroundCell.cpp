@@ -23,6 +23,7 @@ void ABackgroundCell::OnConstruction(const FTransform &trans)
 		SpritePicker = FMath::RandRange(1, CellSpriteArray.Num());
 		CellSprite->SetSprite(CellSpriteArray[SpritePicker - 1]);
 
+		SpritePicker = FMath::RandRange(1, CellSpriteArray.Num());
 		switch (SpritePicker)
 		{
 		case 1: CellSprite->SetSpriteColor(FLinearColor(0.15, 0.15, 0.15, 1)); this->SetActorScale3D(FVector(0.2, 1, 0.2)); CellSprite->TranslucencySortPriority = 20; break;
@@ -30,7 +31,7 @@ void ABackgroundCell::OnConstruction(const FTransform &trans)
 		case 3: CellSprite->SetSpriteColor(FLinearColor(0.45, 0.45, 0.45, 1)); this->SetActorScale3D(FVector(0.5, 1, 0.5)); CellSprite->TranslucencySortPriority = 40; break;
 		default: CellSprite->SetSpriteColor(FLinearColor(0.15, 0.15, 0.15, 1)); this->SetActorScale3D(FVector(0.2, 1, 0.2)); CellSprite->TranslucencySortPriority = 20; break;
 		}
-
+		
 		RotationSpeed = FMath::RandRange(1, CellSpriteArray.Num());
 
 		ApplyChanges = false;

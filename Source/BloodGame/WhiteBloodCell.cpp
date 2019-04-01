@@ -151,19 +151,31 @@ void AWhiteBloodCell::Tick(float DeltaTime)
 
 void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if ((Other != NULL) && (Other != this) && (OtherComp != NULL))
+	if ((Other != NULL) && (Other != this) && (OtherComp != NULL) && MovementReset)
 	{
 		// Creates a reference to the player
 		APlayerPawn * PlayerRef = Cast<APlayerPawn>(Other);
 		if(PlayerRef && MyComp == ShieldISM)
 		{
+			MovementReset = false;
+
 			// Tells the player they've been hit by a shield
-			MovementDirectionEnum temp = CellMovementDirection;
+			TempCellDirection = CellMovementDirection;
 			CellMovementDirection = MovementDirectionEnum::NoMovement;
 			PlayerRef->HitShield(this, BounceStrength);
-			FLatentActionInfo LatentInfo;
-			UKismetSystemLibrary::Delay(this, 0.2f, LatentInfo);
-			CellMovementDirection = temp;
+
+			//Stuns and restarts the cell
+			FTimerHandle MovementRestartTimer;
+			FTimerDelegate Delegate;
+			Delegate.BindUObject(this, &AWhiteBloodCell::RestartMovement);
+			GetWorld()->GetTimerManager().SetTimer(MovementRestartTimer, Delegate, 0.1, false, 0);
 		}
 	}
+}
+
+// Restarts the cell's movement after hitting the player
+void AWhiteBloodCell::RestartMovement()
+{
+	CellMovementDirection = TempCellDirection;
+	MovementReset = true;
 }

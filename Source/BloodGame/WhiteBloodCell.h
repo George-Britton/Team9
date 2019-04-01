@@ -26,7 +26,7 @@ public:
 
 	// Applies all the modified changed
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
-		bool ApplyChanges = true;
+		bool ApplyChanges = false;
 
 	// Whether or not the cell difts
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
@@ -86,11 +86,19 @@ public:
 
 	// Strength with which the cell hits the player
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
-		float BounceStrength = 100;
+		float BounceStrength = 30000;
 
 	// Shield ISM component
 	UPROPERTY()
 		UInstancedStaticMeshComponent * ShieldISM;
+
+	// Used to save the cell's movement pre-bounce
+	UPROPERTY()
+		MovementDirectionEnum TempCellDirection;
+
+	// Makes sure the movement is always reset
+	UPROPERTY()
+		bool MovementReset = true;
 
 
 protected:
@@ -105,8 +113,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
 	// Called when the cell hits anything
 	UFUNCTION()
 		void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	// Called during runtime to restart the cell's movement post-bounce
+	UFUNCTION()
+		void RestartMovement();
 };

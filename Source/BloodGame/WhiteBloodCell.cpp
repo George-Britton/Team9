@@ -159,10 +159,13 @@ void AWhiteBloodCell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 		{
 			MovementReset = false;
 
+			FTransform ShieldLocation;
+			ShieldISM->GetInstanceTransform(0, ShieldLocation, true);
+
 			// Tells the player they've been hit by a shield
 			TempCellDirection = CellMovementDirection;
 			CellMovementDirection = MovementDirectionEnum::NoMovement;
-			PlayerRef->HitShield(this, BounceStrength);
+			PlayerRef->HitShield(this, BounceStrength, ShieldLocation.GetLocation());
 
 			//Stuns and restarts the cell
 			FTimerHandle MovementRestartTimer;

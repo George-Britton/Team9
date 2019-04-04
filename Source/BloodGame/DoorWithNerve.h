@@ -40,6 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		uint32 DoorsOpenTime = 2;
 
+	// How wide the doors open
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		uint32 DoorWidth = 25;
 
@@ -86,6 +87,10 @@ public:
 	// Value used to determine how much to grow and shrink the nerve
 	UPROPERTY()
 		float NerveHeight;
+
+	// Used to determine if the nerve has moved
+	UPROPERTY()
+		FTransform NervesLastTransform;
 
 public:
 	// Called every frame

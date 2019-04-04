@@ -41,7 +41,6 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		// Clear all the ISMs
 		LeftDoor->ClearInstances();
 		RightDoor->ClearInstances();
-		NerveISM->ClearInstances();
 		
 		// Makes sure there's a customisable transform for each set of doors
 		FTransform BaseTransform;
@@ -65,15 +64,21 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 				DoorPlacement.SetLocation(FVector((DoorTransforms[Placer].GetLocation().X + (Door->GetBounds().GetBox().GetSize().X / 2)), DoorTransforms[Placer].GetLocation().Y, DoorTransforms[Placer].GetLocation().Z));
 				RightDoor->AddInstance(DoorPlacement);
 			}
-
-			NerveISM->AddInstance(NerveLocation);
-			NerveHeight = NerveLocation.GetScale3D().Z;
 		}else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'")); // Warning if the meshes don't exist
 		}
 
 		Apply = false;
+	}
+
+	// Allows the nerve to move without waiting for Apply Changes
+	if (NervesLastTransform.GetLocation() != NerveLocation.GetLocation() || NervesLastTransform.GetRotation() != NerveLocation.GetRotation() || NervesLastTransform.GetScale3D() != NerveLocation.GetScale3D())
+	{
+		NerveISM->ClearInstances();
+		NerveISM->AddInstance(NerveLocation);
+		NerveHeight = NerveLocation.GetScale3D().Z;
+		NerveISM->GetInstanceTransform(0, NervesLastTransform, false);
 	}
 }
 

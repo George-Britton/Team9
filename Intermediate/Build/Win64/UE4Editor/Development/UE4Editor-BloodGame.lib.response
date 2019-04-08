@@ -1,0 +1,30 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-BloodGame.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\Tools\UE_4.19\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BackgroundCell.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BackgroundCellSpawner.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BloodGame.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\Checkpoint.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\DoorWithNerve.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\PlayerPawn.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\RedBloodCell.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\UncontrollableZone.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\WhiteBloodCell.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BackgroundCell.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BackgroundCellSpawner.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\BloodGame.init.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\Checkpoint.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\DoorWithNerve.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\PlayerPawn.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\RedBloodCell.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\UncontrollableZone.gen.cpp.obj"
+"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\WhiteBloodCell.gen.cpp.obj"
+"D:\Tools\UE_4.19\Engine\Intermediate\Build\Win64\UE4Editor\Development\BloodGame\PCLaunch.rc.res"
+"D:\Tools\UE_4.19\Engine\Intermediate\Build\Win64\UE4Editor\Development\ModuleVersionResource.rc.inl.res"
+/OUT:"D:\University\Year 2\BA2b\Repository\Team9\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-BloodGame.lib"

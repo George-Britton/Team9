@@ -31,6 +31,8 @@ void ABackgroundCell::OnConstruction(const FTransform &trans)
 		case 3: CellSprite->SetSpriteColor(FLinearColor(0.45, 0.45, 0.45, 1)); this->SetActorScale3D(FVector(0.5, 1, 0.5)); CellSprite->TranslucencySortPriority = 40; break;
 		default: CellSprite->SetSpriteColor(FLinearColor(0.15, 0.15, 0.15, 1)); this->SetActorScale3D(FVector(0.2, 1, 0.2)); CellSprite->TranslucencySortPriority = 20; break;
 		}
+
+
 		
 		RotationSpeed = FMath::RandRange(1, CellSpriteArray.Num());
 

@@ -42,9 +42,6 @@ void ABackgroundCellSpawner::BeginPlay()
 // Spawns a cell
 void ABackgroundCellSpawner::Spawn()
 {
-
-	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::White, TEXT("Spawn"));
-
 	const FVector SpawnLoc = UKismetMathLibrary::RandomPointInBoundingBox(SpawnBox->GetComponentLocation(), SpawnBox->GetScaledBoxExtent());
 	const FRotator SpawnRot(FQuat::Identity);
 	FActorSpawnParameters SpawnParams;

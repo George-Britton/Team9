@@ -17,12 +17,15 @@ public:
 	// Sets default values for this actor's properties
 	AWhiteBloodCellStarter();
 
+	// The Box the player overlaps to start the cells moving
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell Starter")
 		UBoxComponent * StartingBox;
 
+	// Enum dictating the direction the cells should start moving in
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell Starter")
 		MovementDirectionEnum CellDirection = MovementDirectionEnum::LeftMovement;
 
+	// Array of chosen cells to start moving
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell Starter")
 		TArray<AWhiteBloodCell*> CellsToStart;
 

@@ -52,12 +52,6 @@ void ARedBloodCell::OnConstruction(const FTransform& Transform)
 	if (CellMovementDirection == MovementDirectionEnum::UpMovement || CellMovementDirection == MovementDirectionEnum::DownMovement) { VerticalSway = false; }
 }
 
-// Called when the game starts or when spawned
-void ARedBloodCell::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 // Called every frame
 void ARedBloodCell::Tick(float DeltaTime)
 {

@@ -26,14 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell Starter")
 		TArray<AWhiteBloodCell*> CellsToStart;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called when the actor overlaps with anything
 	UFUNCTION()
 		void NotifyActorBeginOverlap(AActor* OtherActor) override;

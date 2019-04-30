@@ -15,20 +15,7 @@ AWhiteBloodCellStarter::AWhiteBloodCellStarter()
 	StartingBox->SetupAttachment(this->RootComponent);
 }
 
-// Called when the game starts or when spawned
-void AWhiteBloodCellStarter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AWhiteBloodCellStarter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
+// Called when the actor overlaps with anything
 void AWhiteBloodCellStarter::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	APlayerPawn* PlayerRef = Cast<APlayerPawn>(OtherActor);

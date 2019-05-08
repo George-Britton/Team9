@@ -5,10 +5,12 @@
 #include "GameFramework/Pawn.h"
 #include "Engine.h"
 #include "RedBloodCell.h"
+#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 #include "WhiteBloodCell.generated.h"
 
 UENUM() // Enum for the placement of the shield relative to the cell
-enum class ShieldOrientationEnum : uint8{
+enum class ShieldOrientationEnum : uint8 {
 	ShieldOrientation_Up UMETA(DisplayName = "Up"),
 	ShieldOrientation_Down UMETA(DisplayName = "Down"),
 	ShieldOrientation_Left UMETA(DisplayName = "Left"),
@@ -74,23 +76,31 @@ public:
 
 	// Sprite body for the cell
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
-		UPaperSprite * Sprite;
+		UPaperFlipbook * SpriteFlipbook;
 
 	// Sprite that is spawned to represent the cell
 	UPROPERTY()
-		UPaperSpriteComponent * CellSprite;
+		UPaperFlipbookComponent * CellSprite;
 
 	// Static mesh for the shield
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
-		UStaticMesh * Shield;
+		UPaperSprite * Shield;
 
 	// Strength with which the cell hits the player
 	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
 		float BounceStrength = 30000;
 
-	// Shield ISM component
+	// Sound that plays when the player bounces off the shield
+	UPROPERTY(EditAnywhere, Category = "White Blood Cell", BlueprintReadWrite)
+		USoundCue * ShieldBounceSound;
+
+	// Sound component to play the bounce sound
 	UPROPERTY()
-		UInstancedStaticMeshComponent * ShieldISM;
+		UAudioComponent * ShieldBounceAudioComponent;
+
+	// Shield sprite component
+	UPROPERTY()
+		UPaperSpriteComponent * ShieldSprite;
 
 	// Used to save the cell's movement pre-bounce
 	UPROPERTY()

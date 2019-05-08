@@ -13,6 +13,8 @@ AUncontrollableZone::AUncontrollableZone()
 	// Set the basic objects for the actor's components
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	this->EnterAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Enter Audio"));
+	this->ExitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Exit Audio"));
 
 	// Sets the box attachment to the root
 	Box->SetupAttachment(RootComponent);
@@ -26,6 +28,11 @@ void AUncontrollableZone::NotifyActorBeginOverlap(AActor* OtherActor)
 		//Tells the player they've entered an unctontrollable zone
 		APlayerPawn * PlayerRef = Cast<APlayerPawn>(OtherActor);
 		PlayerRef->LoseControl(this);
+
+		if (EnterSound) {
+			EnterAudioComponent->SetSound(EnterSound);
+			EnterAudioComponent->Play();
+		}
 	}
 }
 
@@ -37,5 +44,9 @@ void AUncontrollableZone::NotifyActorEndOverlap(AActor* OtherActor)
 		//Tells the player they've exited an unctontrollable zone
 		APlayerPawn * PlayerRef = Cast<APlayerPawn>(OtherActor);
 		PlayerRef->RegainControl(this);
+		if (ExitSound) {
+			ExitAudioComponent->SetSound(ExitSound);
+			ExitAudioComponent->Play();
+		}
 	}
 }

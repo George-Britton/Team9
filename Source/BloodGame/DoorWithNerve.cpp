@@ -13,12 +13,20 @@ ADoorWithNerve::ADoorWithNerve()
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->LeftDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Left Door"));
 	this->RightDoor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Right Door"));
-	this->NerveISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Nerve"));
+	this->Nerve = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Nerve"));
+	this->DoorAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
+	this->DoorFlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Door Flipbook"));
 
 	// Sets the attachments to the root
 	LeftDoor->SetupAttachment(this->RootComponent);
 	RightDoor->SetupAttachment(this->RootComponent);
-	NerveISM->SetupAttachment(this->RootComponent);
+	Nerve->SetupAttachment(this->RootComponent);
+	DoorAudioComponent->SetupAttachment(this->RootComponent);
+	DoorFlipbookComponent->SetupAttachment(this->RootComponent);
+
+	// Sets the visibility to false for the doors, so that only the animation is visible
+	LeftDoor->SetHiddenInGame(true);
+	RightDoor->SetHiddenInGame(true);
 }
 
 // Called when the doors or nerve hits anything
@@ -32,8 +40,8 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		this->LeftDoor->SetStaticMesh(Door);
 		this->RightDoor->SetStaticMesh(Door);
 	}
-	if (this->Nerve) {
-		this->NerveISM->SetStaticMesh(Nerve);
+	if (this->NerveSprite) {
+		this->Nerve->SetSprite(NerveSprite);
 	}
 
 	// Changes to be made when applied
@@ -53,9 +61,9 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			}
 		}
 
-		if (Door && Nerve)
+		if (Door)
 		{
-			// Places all the doors and nerve isms in the world
+			// Places all the door isms in the world
 			for (int32 Placer = 0; Placer < AmountOfDoors; Placer++)
 			{
 				FTransform DoorPlacement = DoorTransforms[Placer];
@@ -69,16 +77,28 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'")); // Warning if the meshes don't exist
 		}
 
+		if (DoorSound) {
+			// Sets the door sound that'll play
+			DoorAudioComponent->SetSound(DoorSound);
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign a sound")); // Warning if the sound doesn't exist
+		}
+
+		if (DoorFlipbook && this->DoorFlipbookComponent) {
+			// Sets the flipbook that plays when the door opens and closes
+			DoorFlipbookComponent->SetFlipbook(DoorFlipbook);
+			DoorFlipbookComponent->Stop();
+			DoorFlipbookComponent->SetLooping(false);
+		}
+
 		Apply = false;
 	}
 
 	// Allows the nerve to move without waiting for Apply Changes
 	if (NervesLastTransform.GetLocation() != NerveLocation.GetLocation() || NervesLastTransform.GetRotation() != NerveLocation.GetRotation() || NervesLastTransform.GetScale3D() != NerveLocation.GetScale3D())
 	{
-		NerveISM->ClearInstances();
-		NerveISM->AddInstance(NerveLocation);
-		NerveHeight = NerveLocation.GetScale3D().Z;
-		NerveISM->GetInstanceTransform(0, NervesLastTransform, false);
+		Nerve->SetRelativeTransform(NerveLocation);
 	}
 }
 
@@ -104,11 +124,12 @@ void ADoorWithNerve::Tick(float DeltaTime)
 		}
 
 		// Regrows the nerve slightly every tick
-		FTransform NerveNewTransform;
-		NerveISM->GetInstanceTransform(0, NerveNewTransform);
-		NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z + (NerveHeight / DoorWidth)));
-		NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z + (NerveHeight / DoorWidth)));
-		NerveISM->UpdateInstanceTransform(0, NerveNewTransform, false, true);
+		if (Retriggerable) {
+			FTransform NerveNewTransform = Nerve->GetRelativeTransform();
+			NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z + (NerveHeight / DoorWidth)));
+			NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z + (NerveHeight / DoorWidth)));
+			Nerve->SetRelativeTransform(NerveNewTransform);
+		}
 
 		DoorCounter--;
 
@@ -122,16 +143,20 @@ void ADoorWithNerve::Tick(float DeltaTime)
 			// Stops the player moving through the doors
 			LeftDoor->SetCollisionProfileName("BlockAllDynamic");
 			RightDoor->SetCollisionProfileName("BlockAllDynamic");
-			NerveISM->SetCollisionProfileName("BlockAllDynamic");
+			Nerve->SetCollisionProfileName("BlockAllDynamic");
 		}
 	}
 	
 	// Waits for the predetermined amount of time then changes the door's state to closing
-	if (DoorState == DoorStateEnum::DoorState_Open && Retriggerable)
+	if (DoorState == DoorStateEnum::DoorState_Open)
 	{
 		DoorOpenDelay += DeltaTime;
 		if (DoorOpenDelay >= DoorsOpenTime) {
 			DoorState = DoorStateEnum::DoorState_Closing;
+			if (DoorSound) {
+				DoorAudioComponent->Play();
+			}
+			DoorFlipbookComponent->ReverseFromEnd();
 		}
 	}
 
@@ -152,11 +177,10 @@ void ADoorWithNerve::Tick(float DeltaTime)
 		}
 
 		// Shrinks the nerve slightly every tick
-		FTransform NerveNewTransform;
-		NerveISM->GetInstanceTransform(0, NerveNewTransform);
+		FTransform NerveNewTransform = Nerve->GetRelativeTransform();
 		NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z - (NerveHeight / DoorWidth)));
 		NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z - (NerveHeight / DoorWidth)));
-		NerveISM->UpdateInstanceTransform(0, NerveNewTransform, false, true);
+		Nerve->SetRelativeTransform(NerveNewTransform);
 
 		DoorCounter++;
 
@@ -174,12 +198,18 @@ void ADoorWithNerve::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrim
 	if ((Other != NULL) && (Other != this) && (OtherComp != NULL))
 	{
 		// Checks if the player hit the nerve, removes the nerve, and changes the door's state to opening
-		if (Other->GetName()=="Player" && MyComp == NerveISM && DoorState == DoorStateEnum::DoorState_Closed)
+		if (Other->GetName()=="Player" && MyComp == Nerve && DoorState == DoorStateEnum::DoorState_Closed)
 		{
 			DoorState = DoorStateEnum::DoorState_Opening;
 			LeftDoor->SetCollisionProfileName("NoCollision");
 			RightDoor->SetCollisionProfileName("NoCollision");
-			NerveISM->SetCollisionProfileName("NoCollision");
+			Nerve->SetCollisionProfileName("NoCollision");
+
+			DoorFlipbookComponent->Play();
+
+			if (DoorSound) {
+				DoorAudioComponent->Play();
+			}
 		}
 	}
 }

@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine.h"
+#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
+#include "PaperSpriteComponent.h"
 #include "DoorWithNerve.generated.h"
 
 UENUM() // Enum for the movement state of the doors
@@ -32,6 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		bool Retriggerable = false;
 
+	// Whether the door stays closed
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		bool StayClosed = false;
+
 	// Number of sets of doors to spawn
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		int32 AmountOfDoors = 1;
@@ -48,9 +55,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		UStaticMesh * Door;
 
-	// Static mesh for the NerveISM
+	// Sprite for the Nerve
 	UPROPERTY(EditAnywhere, Category = "Doors")
-		UStaticMesh * Nerve;
+		UPaperSprite * NerveSprite;
+
+	// Flipbook for the door
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		UPaperFlipbook * DoorFlipbook;
 
 	// Transform of the nerve that controls the doors
 	UPROPERTY(EditAnywhere, Category = "Doors")
@@ -59,6 +70,18 @@ public:
 	// Transforms of all the sets of doors
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		TArray<FTransform> DoorTransforms;
+
+	// Sound to be played when the door opens or closes
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		USoundCue * DoorSound;
+
+	// Audio component that plays the door sound
+	UPROPERTY()
+		UAudioComponent * DoorAudioComponent;
+
+	// Flipbook component for the door
+	UPROPERTY()
+		UPaperFlipbookComponent * DoorFlipbookComponent;
 
 	// Counter for opening and closing the doors
 	UPROPERTY()
@@ -76,9 +99,9 @@ public:
 	UPROPERTY()
 		UInstancedStaticMeshComponent * RightDoor;
 
-	// Instanced static mesh of the nerve
+	// Sprite component of the nerve
 	UPROPERTY()
-		UInstancedStaticMeshComponent * NerveISM;
+		UPaperSpriteComponent * Nerve;
 
 	// Enum of the movement state of the doors
 	UPROPERTY()

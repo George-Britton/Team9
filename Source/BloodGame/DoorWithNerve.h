@@ -8,6 +8,7 @@
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
+#include "PaperSprite.h"
 #include "DoorWithNerve.generated.h"
 
 UENUM() // Enum for the movement state of the doors
@@ -58,6 +59,10 @@ public:
 	// Sprite for the Nerve
 	UPROPERTY(EditAnywhere, Category = "Doors")
 		UPaperSprite * NerveSprite;
+
+	// Transform of the sprite component
+	UPROPERTY(EditAnywhere, Category = "Doors")
+		FTransform SpriteTransform;
 
 	// Flipbook for the door
 	UPROPERTY(EditAnywhere, Category = "Doors")

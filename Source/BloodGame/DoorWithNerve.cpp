@@ -44,6 +44,8 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 		this->Nerve->SetSprite(NerveSprite);
 	}
 
+	DoorFlipbookComponent->SetRelativeTransform(SpriteTransform);
+
 	// Changes to be made when applied
 	if (Apply) {
 		// Clear all the ISMs
@@ -61,9 +63,9 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			}
 		}
 
-		if (Door)
+		if (Door && NerveSprite)
 		{
-			// Places all the door isms in the world
+			// Places all the doors and nerve isms in the world
 			for (int32 Placer = 0; Placer < AmountOfDoors; Placer++)
 			{
 				FTransform DoorPlacement = DoorTransforms[Placer];
@@ -74,7 +76,7 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 			}
 		}else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign static meshes to both 'Door' and 'Nerve'")); // Warning if the meshes don't exist
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Please assign a static meshe to 'Door' and a sprite to 'Nerve Sprite'")); // Warning if the meshes don't exist
 		}
 
 		if (DoorSound) {
@@ -96,8 +98,7 @@ void ADoorWithNerve::OnConstruction(const FTransform& Transform)
 	}
 
 	// Allows the nerve to move without waiting for Apply Changes
-	if (NervesLastTransform.GetLocation() != NerveLocation.GetLocation() || NervesLastTransform.GetRotation() != NerveLocation.GetRotation() || NervesLastTransform.GetScale3D() != NerveLocation.GetScale3D())
-	{
+	if (NervesLastTransform.GetLocation() != NerveLocation.GetLocation() || NervesLastTransform.GetRotation() != NerveLocation.GetRotation() || NervesLastTransform.GetScale3D() != NerveLocation.GetScale3D()) {
 		Nerve->SetRelativeTransform(NerveLocation);
 	}
 }
@@ -126,9 +127,8 @@ void ADoorWithNerve::Tick(float DeltaTime)
 		// Regrows the nerve slightly every tick
 		if (Retriggerable) {
 			FTransform NerveNewTransform = Nerve->GetRelativeTransform();
-			NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z + (NerveHeight / DoorWidth)));
-			NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z + (NerveHeight / DoorWidth)));
-			Nerve->SetRelativeTransform(NerveNewTransform);
+			Nerve->SetRelativeScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z + (NerveHeight / DoorWidth)));
+			Nerve->SetRelativeLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z + (NerveHeight / DoorWidth)));
 		}
 
 		DoorCounter--;
@@ -178,9 +178,8 @@ void ADoorWithNerve::Tick(float DeltaTime)
 
 		// Shrinks the nerve slightly every tick
 		FTransform NerveNewTransform = Nerve->GetRelativeTransform();
-		NerveNewTransform.SetScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z - (NerveHeight / DoorWidth)));
-		NerveNewTransform.SetLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z - (NerveHeight / DoorWidth)));
-		Nerve->SetRelativeTransform(NerveNewTransform);
+		Nerve->SetRelativeScale3D(FVector(NerveNewTransform.GetScale3D().X, NerveNewTransform.GetScale3D().Y, NerveNewTransform.GetScale3D().Z - (NerveHeight / DoorWidth)));
+		Nerve->SetRelativeLocation(FVector(NerveNewTransform.GetLocation().X, NerveNewTransform.GetLocation().Y, NerveNewTransform.GetLocation().Z - (NerveHeight / DoorWidth)));
 
 		DoorCounter++;
 
@@ -205,11 +204,11 @@ void ADoorWithNerve::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrim
 			RightDoor->SetCollisionProfileName("NoCollision");
 			Nerve->SetCollisionProfileName("NoCollision");
 
-			DoorFlipbookComponent->Play();
-
 			if (DoorSound) {
 				DoorAudioComponent->Play();
 			}
+
+			DoorFlipbookComponent->Play();
 		}
 	}
 }
